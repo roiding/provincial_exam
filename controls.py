@@ -34,7 +34,7 @@ def get_job_id(pool: PooledDB):
     done = db_tool.execute(pool,f"select zhiwei_daima from provincial_exam_status where jzsj='{newest_hob_id}'")
     done_list=[item[0] for item in done]
     set2=set(done_list)
-    return set1-set2
+    return list(set1-set2)
 
     
 # 将一个列表切分成N份
@@ -52,10 +52,10 @@ def get_result(job_id:str):
     return result.json()
 def worker(db_pool:PooledDB,job_id_list:str):
     for job_id in job_id_list:
-        result=get_result(db_pool,job_id)
+        result=get_result(job_id)
         bkrs=result.get('bkrs')
         jzsj=result.get('jzsj')
-        result1=db_tool.execute(db_pool,f"insert into provincial_exam_status(zhiwei_daima,bkrs,jzsj) values ('{job_id}',{bkrs},'{jzsj}')")
+        db_tool.execute(db_pool,f"insert into provincial_exam_status(zhiwei_daima,bkrs,jzsj) values ('{job_id}',{bkrs},'{jzsj}')")
         # time.sleep(3)
    
 if __name__ == '__main__':
