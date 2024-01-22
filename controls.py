@@ -8,6 +8,22 @@ import random
 from tenacity import retry, stop_after_attempt,retry_if_exception_type,wait_exponential_jitter
 
 th_size=int(os.environ.get('TH_SIZE',10))
+@retry(stop=stop_after_attempt(3),wait=wait_exponential_jitter(initial=30,max=300,jitter=30),retry=retry_if_exception_type(ConnectionError))
+def send_message(token: str, title: str, content: str):
+    '''
+    发送消息
+    '''
+    url = f"https://sctapi.ftqq.com/{token}.send"
+    body = {
+        "title": title,
+        "desp": content,
+        "short": title,
+    }
+    header = {
+        "Content-type": "application/json"
+    }
+    response = requests.post(url, json=body, headers=header)
+    return response.json()
 
 def get_job_id(pool: PooledDB):
     result = db_tool.execute(pool, "select zhiwei_daima from provincial_exam")
@@ -62,5 +78,7 @@ if __name__ == '__main__':
         thread.join()
     
     db_pool.close()
+    if os.environ.get("PUSH_TOKEN"):
+        send_message(os.environ.get("PUSH_TOKEN"),"省考爬取结束","省考爬取结束")
 
     

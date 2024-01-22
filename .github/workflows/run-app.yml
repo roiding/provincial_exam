@@ -19,6 +19,7 @@ jobs:
       DB_PASSWORD : ${{secrets.DB_PASSWORD}}
       DB_NAME : ${{secrets.DB_NAME}}
       TH_SIZE: ${{secrets.TH_SIZE}}
+      PUSH_TOKEN : ${{secrets.PUSH_TOKEN}}
       
     runs-on: ubuntu-latest
 
