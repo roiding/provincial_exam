@@ -10,7 +10,7 @@ from tenacity import retry, stop_after_attempt,retry_if_exception_type,wait_expo
 th_size=int(os.environ.get('TH_SIZE',10))
 
 def get_job_id(pool: PooledDB):
-    result = db_tool.execute(pool, "select zhiwei_daima from provincial_exam where zhiwei_daima in ('01005604','03010001')")
+    result = db_tool.execute(pool, "select zhiwei_daima from provincial_exam")
     return [item[0] for item in result]
 # 将一个列表切分成N份
 def chunk_list(l, n):
