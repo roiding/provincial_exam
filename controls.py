@@ -7,7 +7,7 @@ import requests
 import random
 from tenacity import retry, stop_after_attempt,retry_if_exception_type,wait_exponential_jitter
 
-th_size=int(os.environ.get('TH_SIZE',10))
+th_size=int(os.environ.get('TH_SIZE',10)) if int(os.environ.get('TH_SIZE',10))>2* os.cpu_count() else 2* os.cpu_count()
 @retry(stop=stop_after_attempt(3),wait=wait_exponential_jitter(initial=30,max=300,jitter=30),retry=retry_if_exception_type(ConnectionError))
 def send_message(token: str, title: str, content: str):
     '''
