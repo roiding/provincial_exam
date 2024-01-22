@@ -1,0 +1,6 @@
+__pycache__
+.venv
+phone.txt
+test*
+.vscode
+.env
