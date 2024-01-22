@@ -11,7 +11,16 @@ th_size=int(os.environ.get('TH_SIZE',10))
 
 def get_job_id(pool: PooledDB):
     result = db_tool.execute(pool, "select zhiwei_daima from provincial_exam")
-    return [item[0] for item in result]
+    job_id_list=[item[0] for item in result]
+    set1=set(job_id_list)
+
+    newest_hob_id=get_result(job_id_list[0]).get('jzsj')
+    done = db_tool.execute(pool,f"select zhiwei_daima from provincial_exam_status where jzsj='{newest_hob_id}'")
+    done_list=[item[0] for item in done]
+    set2=set(done_list)
+    return set1-set2
+
+    
 # 将一个列表切分成N份
 def chunk_list(l, n):
     length=len(l)
@@ -22,7 +31,7 @@ def chunk_list(l, n):
         else:
             yield l[i*size:(i+1)*size]
 @retry(wait=wait_exponential_jitter(initial=3,max=12,jitter=3))
-def get_result(db_pool:PooledDB,job_id:str):
+def get_result(job_id:str):
     result=requests.post('http://gzrsks.oumakspt.com:62/tyzpwb/stuchooseexam/getPositionInfo.htm',data={'zwdm':job_id,'examid':'37ed94f6ecdb3320'})
     return result.json()
 def worker(db_pool:PooledDB,job_id_list:str):
