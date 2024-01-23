@@ -52,6 +52,7 @@ def get_push_result(pool:PooledDB,file_path:str):
     result=db_tool.execute(pool,content,header=True)
     return result
 def get_job_id(pool: PooledDB):
+    global newest_job_time
     result = db_tool.execute(pool, "select zhiwei_daima from provincial_exam")
     job_id_list=[item[0] for item in result]
     set1=set(job_id_list)
