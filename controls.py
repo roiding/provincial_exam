@@ -35,10 +35,10 @@ def get_last_selectable_time(time_str:str):
         return f"{month}-{int(day)-1} 19"
     if time == '14':
         # 取当天10点
-        return f"{day} 10"
+        return f"{date} 10"
     if time == '19':
         # 取当天14点
-        return f"{day} 14"
+        return f"{date} 14"
 def get_push_result(pool:PooledDB,file_path:str):
     # 读取file_path的内容
     with open(file_path,'r') as f:
