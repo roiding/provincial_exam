@@ -6,6 +6,7 @@ import time
 import requests
 import random
 from tenacity import retry, stop_after_attempt,retry_if_exception_type,wait_exponential_jitter
+from json.decoder import JSONDecodeError
 
 newest_job_time=""
 
@@ -25,7 +26,10 @@ def send_message(token: str, title: str, content: str):
         "Content-type": "application/json"
     }
     response = requests.post(url, json=body, headers=header)
-    return response.json()
+    try:
+        return response.json()
+    except JSONDecodeError:
+        return None
 
 def get_last_selectable_time(time_str:str):
     [date,time]=time_str.split(" ")
