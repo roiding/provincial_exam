@@ -11,13 +11,17 @@ def create_connection_pool(max_size=5,mincached=1,maxcached=2,**kwargs):
         **kwargs
     )
     return pool
-def execute(pool:PooledDB,sql:str,dictionary=False):
+def execute(pool:PooledDB,sql:str,dictionary=False,header=False):
     
     connect = pool.connection()
     try:
         with connect.cursor(dictionary=dictionary) as cursor:
             cursor.execute(sql)
             result=cursor.fetchall()
+            if header:
+                header=[column[0] for column in cursor.description]
+                # 将表头添加到结果的第一行
+                result = [header] + list(result)
             cursor.close()
             connect.commit()
             return result
