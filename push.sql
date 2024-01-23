@@ -19,5 +19,5 @@ where d.zhuanye_yaoqiu_benke like "%计算机%"
 -- 	政治面貌
 	and d.zhengzhi_mianmao_yaoqiu is null
 --  限制地点
-	and (d.kaoqu='毕节' or d.danwei_dizhi like '毕节市%')
+	and (d.kaoqu='毕节市' or d.danwei_dizhi like '毕节市%')
 order by c.`增长率`;
