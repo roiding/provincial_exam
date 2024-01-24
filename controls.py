@@ -109,7 +109,7 @@ if __name__ == '__main__':
         # 获取当前时间
         now = datetime.datetime.now()
         # 转成北京时间
-        now = now - datetime.timedelta(hours=8)
+        now = now + datetime.timedelta(hours=8)
         # 取当前小时数
         hour = now.hour
         if hour== 9 or hour == 13 or hour == 18:
