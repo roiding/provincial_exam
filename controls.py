@@ -7,6 +7,7 @@ import requests
 import random
 from tenacity import retry, stop_after_attempt,retry_if_exception_type,wait_exponential_jitter
 from json.decoder import JSONDecodeError
+import datetime
 
 newest_job_time=""
 
@@ -104,6 +105,17 @@ def list_to_markdown_table(data):
 
     return markdown_table
 if __name__ == '__main__':
+    while True:
+        # 获取当前时间
+        now = datetime.datetime.now()
+        # 转成北京时间
+        now = now - datetime.timedelta(hours=8)
+        # 取当前小时数
+        hour = now.hour
+        if hour== 9 or hour == 13 or hour == 18:
+            time.sleep(60)
+        else:
+            break
     db_pool = db_tool.create_connection_pool(max_size=th_size,host=os.environ.get('DB_HOST'), user=os.environ.get('DB_USERNAME'), password=os.environ.get(
         'DB_PASSWORD'), database=os.environ.get('DB_NAME'), ssl_ca=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cert.pem'))
     # 所有的jobid
