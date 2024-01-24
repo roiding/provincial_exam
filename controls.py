@@ -8,6 +8,7 @@ import random
 from tenacity import retry, stop_after_attempt,retry_if_exception_type,wait_exponential_jitter
 from json.decoder import JSONDecodeError
 import datetime
+import pytz
 
 newest_job_time=""
 
@@ -107,11 +108,14 @@ def list_to_markdown_table(data):
 if __name__ == '__main__':
     while True:
         # 获取当前时间
-        now = datetime.datetime.now()
+        local_time = datetime.datetime.now()
         # 转成北京时间
-        now = now + datetime.timedelta(hours=8)
+        # now = now + datetime.timedelta(hours=8)
+        # 指定时区为Asia/Shanghai（北京时间）
+        beijing_timezone = pytz.timezone('Asia/Shanghai')
+        beijing_time = local_time.astimezone(beijing_timezone)
         # 取当前小时数
-        hour = now.hour
+        hour = beijing_time.hour
         if hour== 9 or hour == 13 or hour == 18:
             time.sleep(60)
         else:
