@@ -73,7 +73,7 @@ def get_job_id(pool: PooledDB):
 # 将一个列表切分成N份
 def chunk_list(l, n):
     length=len(l)
-    size=length//n
+    size=length//n        
     for i in range(n):
         if i==n-1:
             yield l[i*size:]
@@ -90,6 +90,10 @@ def worker(db_pool:PooledDB,job_id_list:str):
         jzsj=result.get('jzsj')
         db_tool.execute(db_pool,f"insert into provincial_exam_status(zhiwei_daima,bkrs,jzsj) values ('{job_id}',{bkrs},'{jzsj}')")
         # time.sleep(3)
+def get_followed_list(db_pool:PooledDB):
+    result=db_tool.execute(db_pool,"select follow_zhiwei_daima from provincial_watch_list")
+    followed_list=[item[0] for item in result]
+    return followed_list
 def list_to_markdown_table(data):
     # 处理表头
     header = "|".join(map(str, data[0]))
@@ -124,8 +128,18 @@ if __name__ == '__main__':
         'DB_PASSWORD'), database=os.environ.get('DB_NAME'), ssl_ca=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cert.pem'))
     # 所有的jobid
     job_id_list=get_job_id(db_pool)
+    # 获取关注列表
+    followed_list=get_followed_list(db_pool)
+    # 过滤在job_id_list存在的followed_list元素
+    followed_list = [job_id for job_id in job_id_list if job_id in followed_list]
+    # 切分followed_list
+    followed_list=list(chunk_list(followed_list,th_size))
+    # 过滤出不在followed_list中出现的job_id_list中的元素
+    job_id_list = [job_id for job_id in job_id_list if job_id not in followed_list]
     # 切分成th_size份
     job_id_list=list(chunk_list(job_id_list, th_size))
+    # followed_list和job_id_list合并
+    job_id_list=[followed+job_id for followed,job_id in zip(followed_list,job_id_list)]
     threads=[]
     for i in range(th_size):
         thread = threading.Thread(target=worker, args=(db_pool,job_id_list[i],))
