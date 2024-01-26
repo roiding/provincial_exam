@@ -133,13 +133,13 @@ if __name__ == '__main__':
     # 过滤在job_id_list存在的followed_list元素
     followed_list = [job_id for job_id in job_id_list if job_id in followed_list]
     # 切分followed_list
-    followed_list=list(chunk_list(followed_list,th_size))
+    followed_list_chunk=list(chunk_list(followed_list,th_size))
     # 过滤出不在followed_list中出现的job_id_list中的元素
     job_id_list = [job_id for job_id in job_id_list if job_id not in followed_list]
     # 切分成th_size份
     job_id_list=list(chunk_list(job_id_list, th_size))
     # followed_list和job_id_list合并
-    job_id_list=[followed+job_id for followed,job_id in zip(followed_list,job_id_list)]
+    job_id_list=[followed+job_id for followed,job_id in zip(followed_list_chunk,job_id_list)]
     threads=[]
     for i in range(th_size):
         thread = threading.Thread(target=worker, args=(db_pool,job_id_list[i],))
